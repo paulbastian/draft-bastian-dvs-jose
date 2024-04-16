@@ -1,0 +1,71 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2024-04-16T00:58:21.064445+00:00",
+  "repo": "paulbastian/jose-ecdh-mac-algorithms",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOLDmL8c58uqsC",
+      "title": "Align with standard JWS headers ",
+      "url": "https://github.com/paulbastian/jose-ecdh-mac-algorithms/issues/1",
+      "state": "OPEN",
+      "author": "bc-pi",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "From a conversation over at https://github.com/oauth-wg/oauth-selective-disclosure-jwt/issues/369#issuecomment-1902056559\r\n\r\n> > > https://paulbastian.github.io/jose-ecdh-mac-algorithms/draft-bastian-jose-alg-ecdh-mac.html\r\n\r\n> >  interesting work @paulbastian! I might humbly suggest that you revisit how the header parameters are used to better align with how they are already defined in JWS. Specifically, I think the standard JWS headers https://www.rfc-editor.org/rfc/rfc7515#section-4.1 like kid/jwk/x5c/x5t/etc should be for indicating the key of the Generating Party, which is really like the signer in this case. And a new header be defined to convey the Verifying Party's key. What's in draft-bastian-jose-alg-ecdh-mac-01 currently feels kinda backwards from what JWS has. And the Generating Party's key is probably not going to be ephemeral in most cases so epk doesn't seem quite right.\r\n\r\n> Thanks for the feedback @bc-pi\r\n> The header names were the part that I was least sure about, I oriented on the ECDH-ES part of JWA. But I don't mind changing them, feel free to open an issue on the repo!",
+      "createdAt": "2024-01-21T14:25:22Z",
+      "updatedAt": "2024-01-21T14:25:22Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": []
+}
