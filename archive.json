@@ -1,7 +1,7 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-04T01:03:51.520841+00:00",
-  "repo": "paulbastian/jose-ecdh-mac-algorithms",
+  "timestamp": "2024-06-06T01:03:16.157078+00:00",
+  "repo": "paulbastian/draft-bastian-dvs-jose",
   "labels": [
     {
       "name": "bug",
@@ -54,7 +54,7 @@
       "number": 1,
       "id": "I_kwDOLDmL8c58uqsC",
       "title": "Align with standard JWS headers ",
-      "url": "https://github.com/paulbastian/jose-ecdh-mac-algorithms/issues/1",
+      "url": "https://github.com/paulbastian/draft-bastian-dvs-jose/issues/1",
       "state": "OPEN",
       "author": "bc-pi",
       "authorAssociation": "NONE",
