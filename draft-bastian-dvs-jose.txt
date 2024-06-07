@@ -95,9 +95,9 @@ Table of Contents
    use a combination of an ECDH key exchange with an HMAC.
 
    This specification and all described algorithms should respect the
-   efforts for Fully Specified Algorithms
-   (https://www.ietf.org/archive/id/draft-jones-jose-fully-specified-
-   algorithms-00.html).
+   efforts for (Fully Specified
+   Algorithms)[https://www.ietf.org/archive/id/draft-jones-jose-fully-
+   specified-algorithms-00.html].
 
    This algorithm is intended for use with digital credentials
    ecosystems, including the Issuer-Holder-Verifier model described by
@@ -127,7 +127,11 @@ Table of Contents
 
    DVS uses the following notation:
 
+   TODO
+
    DVS rely on the following primitives:
+
+   TODO
 
 5.  Designates Verifier Signatures
 
