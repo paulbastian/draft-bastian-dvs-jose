@@ -1,0 +1,311 @@
+
+
+
+
+Javascript Object Signing and Encryption                      P. Bastian
+Internet-Draft                                      Bundesdruckerei GmbH
+Intended status: Informational                               7 June 2024
+Expires: 9 December 2024
+
+
+                Designated Verifier Signatures for JOSE
+                     draft-bastian-dvs-jose-latest
+
+Abstract
+
+   This specification defines designated verifier signatures for JOSE
+   and defines algorithms that use a combination of key agreement and
+   MACs.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   The latest revision of this draft can be found at
+   https://paulbastian.github.io/draft-bastian-dvs-jose/draft-bastian-
+   dvs-jose.html.  Status information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-bastian-dvs-jose/.
+
+   Discussion of this document takes place on the Javascript Object
+   Signing and Encryption Working Group mailing list
+   (mailto:jose@ietf.org), which is archived at
+   https://mailarchive.ietf.org/arch/browse/jose/.  Subscribe at
+   https://www.ietf.org/mailman/listinfo/jose/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/paulbastian/draft-bastian-dvs-jose.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 9 December 2024.
+
+Copyright Notice
+
+   Copyright (c) 2024 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction
+   2.  Conventions and Definitions
+   3.  Terminology
+   4.  Cryptographic Dependencies
+   5.  Designates Verifier Signatures
+     5.1.  Signature Generation
+   6.  Designated Verifier Signatures for JOSE
+     6.1.  Example JWT
+   7.  Signature Suites
+   8.  Security Considerations
+   9.  IANA Considerations
+   10. Normative References
+   Acknowledgments
+   Author's Address
+
+1.  Introduction
+
+   Designated verifier signatures (DVS) are signature schemes in which
+   signatures are generated, that can only be verified a particular
+   party.  Unlike conventional digital signature schemes like ECDSA,
+   this enables repudiable signatures.
+
+   This specification describes a general structure for designated
+   verifier signature schemes and specified a set of instantiations that
+   use a combination of an ECDH key exchange with an HMAC.
+
+   This specification and all described algorithms should respect the
+   efforts for (Fully Specified
+   Algorithms)[https://www.ietf.org/archive/id/draft-jones-jose-fully-
+   specified-algorithms-00.html].
+
+   This algorithm is intended for use with digital credentials
+   ecosystems, including the Issuer-Holder-Verifier model described by
+   W3C VCDM or IETF SD-JWT-VC.
+
+2.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+3.  Terminology
+
+   The draft uses "JSON Web Signature", "JOSE Header", "JWS Signature",
+   "JWS Signing Input" as defined by [RFC7515].
+
+   Signing Party:  The Party that performs the key agreement first and
+      generates the MAC.  Similar to a Signer.
+
+   Verifying Party:  The Party that performs the key agreement second,
+      generates the MAC and compares it to a given value.  Similar to a
+      Verifier.
+
+4.  Cryptographic Dependencies
+
+   DVS uses the following notation:
+
+   TODO
+
+   DVS rely on the following primitives:
+
+   TODO
+
+5.  Designates Verifier Signatures
+
+   A designated verifier signature requires three components for an
+   algorithm:
+
+   1.  a Diffie-Hellman Key Agreement (DHKA)
+
+   2.  a Key Derivation Function (KDF)
+
+   3.  a Message Authentication Code algorithm (MAC)
+
+   In general, these parameters are chosen by the Signing Party.  These
+   parameters need to be communicated to the Verifying Party before the
+   generation of a Designated Verifier Signature.
+
+5.1.  Signature Generation
+
+   The generation of the Designated Verifier Signature takes the private
+   key of the Signing Party, the public key of the Verifying Party and
+   the message as inputs.  The retrieval and communication of the
+   Verifying Party's public key is out of scope of this specification
+   and subject to the implementing protocols.
+
+   The generation of the signature follows these steps:
+
+   1.  Perform the key agreement as defined by the DHKA algorithm - use
+       the specified elliptic curve to generate a key pair and set the
+       epk - use the Verifier's public key defined by kid to perform the
+       key agreement - optionally provide a certificate chain defined by
+       x5c
+
+   2.  Extract and expand the shared secret as defined by KDF algorithm
+       - use the output from the key agreement as an input for the key
+       derivation algorithm - derive the MAC key
+
+   3.  Generate a MAC as defined by MAC algorithm - use the output from
+       the key derivation algorithm as an input for the MAC algorithm -
+       use the JWS Signing Input as defined in Section 5.1 if [RFC7515]
+       as the message input for the MAC algorithm - generate the MAC
+
+   The verification of signature follows these steps:
+
+   1.  Perform key agreement as defined by the DHKA algorithm - use the
+       specified elliptic curve to generate an ephemeral key pair and
+       set the kid - provide the public key kid to the Signing Party -
+       use the Signing Party's public key defined by epk and perform the
+       key agreement - optionally validate the certificate chain defined
+       by x5c
+
+   2.  Extract and expand the shared secret as defined by KDF algorithm
+       - use the output from the key agreement as an input for the key
+       derivation algorithm - derive the MAC key
+
+   3.  Generate a MAC as defined by MAC algorithm - use the output from
+       the key derivation algorithm as an input for the MAC algorithm -
+       generate the MAC
+
+   4.  Compare the generated MAC with the signature value
+
+6.  Designated Verifier Signatures for JOSE
+
+   Designated Verifier Signatures behave like a digital signature as
+   described in Section 3 of [RFC7518] and are intended for use in JSON
+   Web Signatures (JWS) as described in [RFC7515].  The Generating Party
+   performs the Message Signature or MAC Computation as defined by
+   Section 5.1 of [RFC7515].  The Verifying Party performs the Message
+   Signature or MAC Validation as defined by Section 5.2 of [RFC7515].
+
+   The following JWS headers are used to convey Designated Verifier
+   Signatures for JOSE:
+
+   *  alg : The algorithm parameter describes the chosen signature
+      suite, for example the ones described in (#suites)
+
+   *  jwk : The jwk parameter represents the encoded public key of the
+      Signing Party for the use in the DHKA algorithm as a JSON Web Key
+      according to [RFC7517].  It MUST contain only public key
+      parameters and SHOULD contain only the minimum JWK parameters
+      necessary to represent the key.  Usage of this parameter MUST be
+      supported.
+
+   *  x5c : The x5c parameter represents the encoded certificate chain
+      and its leaf public key of the Signing Party for the use in the
+      DHKA algorithm as a X.509 certificate chain according to
+      [RFC7517].  Alternatively, the Signing Party may use "x5t",
+      x5t#S256" or "x5u".  Usage of this parameter MAY be supported.
+
+   *  rpk : The rpk (recipient public key) parameter represents the
+      encoded public key of the Verifying Party that was used in the
+      DHKA algorithm as a JSON Web Key according to [RFC7517].  This
+      parameter MUST be present.
+
+6.1.  Example JWT
+
+   The JWT/JWS header:
+
+   {
+       "typ" : "JWT",
+       "alg" : "DVS-P256-SHA256-HS256",
+       "jwk" : <JWK of the Signing Party>,
+       "rpk" : <JWK of Verifying Party>
+   }
+
+   The JWT/JWS payload:
+
+   {
+       "iss" : "https://example.as.com",
+       "iat" : "1701870613",
+       "given_name" : "Erika",
+       "family_name" : "Mustermann"
+   }
+
+   The JWT/JWS signature:
+
+   base64-encoded MAC
+
+7.  Signature Suites
+
+   Algorithms MUST follow the naming DVS-<DHKA>-<KDF>-<MAC>.
+
+   This specification described instantiations of Designated Verifier
+   Signatures using specific algorithm combinations:
+
++-----------------------+-----------------------------+----------------+
+| Algorithm Name        | Algorithm Description       |                |
+|                       |                             | Requirements   |
++-----------------------+-----------------------------+----------------+
+| DVS-P256-SHA256-HS256 | ECDH using NIST P-256,      | Optional       |
+|                       | HKDF using SHA-256 and      |                |
+|                       | HMAC using SHA-256          |                |
++--------------------+--------------------------------+----------------+
+
+8.  Security Considerations
+
+   TODO Security
+
+9.  IANA Considerations
+
+   Define:
+
+   *  rpk header parameter
+
+   *  alg values for DVS-P256-SHA256-HS256 and some more
+
+10.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
+              Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
+              2015, <https://www.rfc-editor.org/rfc/rfc7515>.
+
+   [RFC7517]  Jones, M., "JSON Web Key (JWK)", RFC 7517,
+              DOI 10.17487/RFC7517, May 2015,
+              <https://www.rfc-editor.org/rfc/rfc7517>.
+
+   [RFC7518]  Jones, M., "JSON Web Algorithms (JWA)", RFC 7518,
+              DOI 10.17487/RFC7518, May 2015,
+              <https://www.rfc-editor.org/rfc/rfc7518>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+Acknowledgments
+
+   TODO acknowledge.
+
+Author's Address
+
+   Paul Bastian
+   Bundesdruckerei GmbH
+   Email: bastianpaul@googlemail.com
