@@ -3,9 +3,9 @@
 
 
 Javascript Object Signing and Encryption                      P. Bastian
-Internet-Draft                                      Bundesdruckerei GmbH
-Intended status: Informational                              13 June 2024
-Expires: 15 December 2024
+Internet-Draft                                                  M. Kraus
+Intended status: Informational                      Bundesdruckerei GmbH
+Expires: 15 December 2024                                   13 June 2024
 
 
                 Designated Verifier Signatures for JOSE
@@ -84,7 +84,7 @@ Table of Contents
    10. IANA Considerations
    11. Normative References
    Acknowledgments
-   Author's Address
+   Authors' Addresses
 
 1.  Introduction
 
@@ -369,8 +369,12 @@ Acknowledgments
 
    TODO acknowledge.
 
-Author's Address
+Authors' Addresses
 
    Paul Bastian
    Bundesdruckerei GmbH
    Email: bastianpaul@googlemail.com
+
+
+   Micha Kraus
+   Bundesdruckerei GmbH
