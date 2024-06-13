@@ -11,9 +11,10 @@
        This specification defines designated verifier signatures for JOSE and defines algorithms that use a combination of key agreement and MACs. 
     " name="description">
 <meta content="xml2rfc 3.21.0" name="generator">
-<meta content="next generation" name="keyword">
-<meta content="unicorn" name="keyword">
-<meta content="sparkling distributed ledger" name="keyword">
+<meta content="JOSE" name="keyword">
+<meta content="JWS" name="keyword">
+<meta content="designated verifier signature" name="keyword">
+<meta content="HPKE" name="keyword">
 <meta content="draft-bastian-dvs-jose-latest" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.21.0
@@ -1162,6 +1163,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
                 <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-signature-verification" class="internal xref">Signature Verification</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3">
+                <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-signature-suites" class="internal xref">Signature Suites</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
@@ -1173,7 +1177,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-signature-suites" class="internal xref">Signature Suites</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-signature-suites-2" class="internal xref">Signature Suites</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
             <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
@@ -1182,7 +1186,15 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
             <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
@@ -1323,41 +1335,46 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       <h2 id="name-designated-verifier-signatur">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-designated-verifier-signatur" class="section-name selfRef">Designated Verifier Signatures using HPKE</a>
       </h2>
+<p id="section-6-1">This section describes a simple designated verifier signature scheme based on Hybrid Public Key Encryption (HPKE) <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span> in auth mode.
+It reuses the authentication scheme underlying the AEAD algorithm in use, while using the KEM to establish a one-time authentication key from a pair of KEM public keys.
+This scheme was described in early specification drafts of HPKE <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span><a href="#section-6-1" class="pilcrow">¶</a></p>
 <div id="signature-generation-1">
 <section id="section-6.1">
         <h3 id="name-signature-generation-2">
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-signature-generation-2" class="section-name selfRef">Signature Generation</a>
         </h3>
-<p id="section-6.1-1">Input:<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-1">To create a signature, the sender simply calls the single-shot <code>Seal()</code> method with an empty plaintext value and the message to be signed as AAD.
+This produces an encoded key enc and a ciphertext value that contains only the AAD tag. The signature value is the concatenation of the encoded key and the AAD tag.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">Input:<a href="#section-6.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6.1-2.1">
-            <p id="section-6.1-2.1.1"><code>skS</code>: private key of the Signing Party<a href="#section-6.1-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-6.1-3.1">
+            <p id="section-6.1-3.1.1"><code>skS</code>: private key of the Signing Party<a href="#section-6.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.1-2.2">
-            <p id="section-6.1-2.2.1"><code>pkR</code>: public key of the Verifying Party<a href="#section-6.1-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-6.1-3.2">
+            <p id="section-6.1-3.2.1"><code>pkR</code>: public key of the Verifying Party<a href="#section-6.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.1-2.3">
-            <p id="section-6.1-2.3.1"><code>msg</code>: JWS Signing Input<a href="#section-6.1-2.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-6.1-3.3">
+            <p id="section-6.1-3.3.1"><code>msg</code>: JWS Signing Input<a href="#section-6.1-3.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-6.1-3">Steps:<a href="#section-6.1-3" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-6.1-4">
-<li id="section-6.1-4.1">
-            <p id="section-6.1-4.1.1">Call (<code>enc</code>, <code>ct</code>) = <code>SealAuth(pkR, info, aad, pt, skS)</code> with<a href="#section-6.1-4.1.1" class="pilcrow">¶</a></p>
+<p id="section-6.1-4">Steps:<a href="#section-6.1-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-6.1-5">
+<li id="section-6.1-5.1">
+            <p id="section-6.1-5.1.1">Call <code>enc</code>, <code>ct</code> = <code>SealAuth(pkR, info, aad, pt, skS)</code> with<a href="#section-6.1-5.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6.1-4.1.2.1">
-                <p id="section-6.1-4.1.2.1.1"><code>info</code> = ""<a href="#section-6.1-4.1.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-6.1-5.1.2.1">
+                <p id="section-6.1-5.1.2.1.1"><code>info</code> = ""<a href="#section-6.1-5.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-6.1-4.1.2.2">
-                <p id="section-6.1-4.1.2.2.1"><code>aad</code> = <code>msg</code><a href="#section-6.1-4.1.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-6.1-5.1.2.2">
+                <p id="section-6.1-5.1.2.2.1"><code>aad</code> = <code>msg</code><a href="#section-6.1-5.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-6.1-4.1.2.3">
-                <p id="section-6.1-4.1.2.3.1"><code>pt</code> = ""<a href="#section-6.1-4.1.2.3.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-6.1-5.1.2.3">
+                <p id="section-6.1-5.1.2.3.1"><code>pt</code> = ""<a href="#section-6.1-5.1.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li id="section-6.1-4.2">
-            <p id="section-6.1-4.2.1">JWS Signature is the octet string concatenation of (<code>enc</code> || <code>ct</code>)<a href="#section-6.1-4.2.1" class="pilcrow">¶</a></p>
+          <li id="section-6.1-5.2">
+            <p id="section-6.1-5.2.1">JWS Signature is the octet string concatenation of (<code>enc</code> || <code>ct</code>)<a href="#section-6.1-5.2.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
@@ -1367,42 +1384,54 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
         <h3 id="name-signature-verification">
 <a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-signature-verification" class="section-name selfRef">Signature Verification</a>
         </h3>
-<p id="section-6.2-1">Input:<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.2-1">To verify a signature, the recipient extracts encoded key and the AAD tag from the signature value and calls the single-shor <code>Open()</code> with the provided ciphertext.
+If the AEAD authentication passes, then the signature is valid.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.2-2">Input:<a href="#section-6.2-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6.2-2.1">
-            <p id="section-6.2-2.1.1"><code>skR</code>: private key of the Verifying Party<a href="#section-6.2-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-6.2-3.1">
+            <p id="section-6.2-3.1.1"><code>skR</code>: private key of the Verifying Party<a href="#section-6.2-3.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.2-2.2">
-            <p id="section-6.2-2.2.1"><code>pkS</code>: public key of the Signing Party<a href="#section-6.2-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-6.2-3.2">
+            <p id="section-6.2-3.2.1"><code>pkS</code>: public key of the Signing Party<a href="#section-6.2-3.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.2-2.3">
-            <p id="section-6.2-2.3.1"><code>msg</code>: JWS Signing Input<a href="#section-6.2-2.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-6.2-3.3">
+            <p id="section-6.2-3.3.1"><code>msg</code>: JWS Signing Input<a href="#section-6.2-3.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.2-2.4">
-            <p id="section-6.2-2.4.1"><code>signature</code>: JWS Signature octet string<a href="#section-6.2-2.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-6.2-3.4">
+            <p id="section-6.2-3.4.1"><code>signature</code>: JWS Signature octet string<a href="#section-6.2-3.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-6.2-3">Steps:<a href="#section-6.2-3" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-6.2-4">
-<li id="section-6.2-4.1">
-            <p id="section-6.2-4.1.1">Decode (<code>enc</code> || <code>ct</code>) = <code>signature</code> by length of <code>enc</code> and <code>ct</code><a href="#section-6.2-4.1.1" class="pilcrow">¶</a></p>
+<p id="section-6.2-4">Steps:<a href="#section-6.2-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-6.2-5">
+<li id="section-6.2-5.1">
+            <p id="section-6.2-5.1.1">Decode <code>enc</code> || <code>ct</code> = <code>signature</code> by length of <code>enc</code> and <code>ct</code>. See <span>[<a href="#HPKE-IANA" class="cite xref">HPKE-IANA</a>]</span> for length of ct and enc.<a href="#section-6.2-5.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-6.2-4.2">
-            <p id="section-6.2-4.2.1">Call <code>pt</code> = <code>OpenAuth(enc, skR, info, aad, ct, pkS)</code> with<a href="#section-6.2-4.2.1" class="pilcrow">¶</a></p>
+          <li id="section-6.2-5.2">
+            <p id="section-6.2-5.2.1">Call <code>pt</code> = <code>OpenAuth(enc, skR, info, aad, ct, pkS)</code> with<a href="#section-6.2-5.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6.2-4.2.2.1">
-                <p id="section-6.2-4.2.2.1.1"><code>info</code> = ""<a href="#section-6.2-4.2.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-6.2-5.2.2.1">
+                <p id="section-6.2-5.2.2.1.1"><code>info</code> = ""<a href="#section-6.2-5.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-6.2-4.2.2.2">
-                <p id="section-6.2-4.2.2.2.1"><code>aad</code> = msg<a href="#section-6.2-4.2.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-6.2-5.2.2.2">
+                <p id="section-6.2-5.2.2.2.1"><code>aad</code> = msg<a href="#section-6.2-5.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li id="section-6.2-4.3">
-            <p id="section-6.2-4.3.1">the signature is valid, when <code>OpenAuth()</code> returns <code>pt</code> = "" with no authentication exception<a href="#section-6.2-4.3.1" class="pilcrow">¶</a></p>
+          <li id="section-6.2-5.3">
+            <p id="section-6.2-5.3.1">the signature is valid, when <code>OpenAuth()</code> returns <code>pt</code> = "" with no authentication exception<a href="#section-6.2-5.3.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-6.2-5">NOTE: <code>ct</code> contains only a tag. It's length depends on the AEAD algorithm (see Nt values in RFC9180 chapter 7.3.)<a href="#section-6.2-5" class="pilcrow">¶</a></p>
+<p id="section-6.2-6">NOTE: <code>ct</code> contains only a tag. It's length depends on the AEAD algorithm (see Nt values in RFC9180 chapter 7.3.)<a href="#section-6.2-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="signature-suites">
+<section id="section-6.3">
+        <h3 id="name-signature-suites">
+<a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-signature-suites" class="section-name selfRef">Signature Suites</a>
+        </h3>
+<p id="section-6.3-1">Algorithms <span class="bcp14">MUST</span> follow the naming <code>DVS-HPKE-&lt;Mode&gt;-&lt;KEM&gt;-&lt;KDF&gt;-&lt;AEAD&gt;</code>.
+"Mode" is Auth (PSKAuth could also be used).
+The "KEM", "KDF", and "AEAD" values are chosen from the HPKE IANA registry <span>[<a href="#HPKE-IANA" class="cite xref">HPKE-IANA</a>]</span>.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1467,8 +1496,8 @@ base64-encoded MAC
 </div>
 <div id="suites">
 <section id="section-8">
-      <h2 id="name-signature-suites">
-<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-signature-suites" class="section-name selfRef">Signature Suites</a>
+      <h2 id="name-signature-suites-2">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-signature-suites-2" class="section-name selfRef">Signature Suites</a>
       </h2>
 <p id="section-8-1">Algorithms <span class="bcp14">MUST</span> follow the naming <code>DVS-&lt;DHKA&gt;-&lt;KDF&gt;-&lt;MAC&gt;</code>.<a href="#section-8-1" class="pilcrow">¶</a></p>
 <p id="section-8-2">This specification described instantiations of Designated Verifier Signatures using specific algorithm combinations:<a href="#section-8-2" class="pilcrow">¶</a></p>
@@ -1521,35 +1550,57 @@ base64-encoded MAC
       </ul>
 </section>
 </div>
-<div id="sec-normative-references">
 <section id="section-11">
-      <h2 id="name-normative-references">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+      <h2 id="name-references">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
+<div id="sec-normative-references">
+<section id="section-11.1">
+        <h3 id="name-normative-references">
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
 <dl class="references">
 <dt id="RFC2119">[RFC2119]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7515">[RFC7515]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Jones, M.</span>, <span class="refAuthor">Bradley, J.</span>, and <span class="refAuthor">N. Sakimura</span>, <span class="refTitle">"JSON Web Signature (JWS)"</span>, <span class="seriesInfo">RFC 7515</span>, <span class="seriesInfo">DOI 10.17487/RFC7515</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7515">https://www.rfc-editor.org/rfc/rfc7515</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7517">[RFC7517]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Jones, M.</span>, <span class="refTitle">"JSON Web Key (JWK)"</span>, <span class="seriesInfo">RFC 7517</span>, <span class="seriesInfo">DOI 10.17487/RFC7517</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7517">https://www.rfc-editor.org/rfc/rfc7517</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7518">[RFC7518]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Jones, M.</span>, <span class="refTitle">"JSON Web Algorithms (JWA)"</span>, <span class="seriesInfo">RFC 7518</span>, <span class="seriesInfo">DOI 10.17487/RFC7518</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7518">https://www.rfc-editor.org/rfc/rfc7518</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
-    <dd>
+        <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9180">[RFC9180]</dt>
+      <dd>
+<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Bhargavan, K.</span>, <span class="refAuthor">Lipp, B.</span>, and <span class="refAuthor">C. Wood</span>, <span class="refTitle">"Hybrid Public Key Encryption"</span>, <span class="seriesInfo">RFC 9180</span>, <span class="seriesInfo">DOI 10.17487/RFC9180</span>, <time datetime="2022-02" class="refDate">February 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9180">https://www.rfc-editor.org/rfc/rfc9180</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
 </div>
+<div id="sec-informative-references">
+<section id="section-11.2">
+        <h3 id="name-informative-references">
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="HPKE-IANA">[HPKE-IANA]</dt>
+      <dd>
+<span class="refTitle">"Hybrid Public Key Encryption (HPKE) IANA Registry"</span>, <time datetime="2023-10" class="refDate">October 2023</time>, <span>&lt;<a href="https://www.iana.org/assignments/hpke/hpke.xhtml">https://www.iana.org/assignments/hpke/hpke.xhtml</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
 <div id="acknowledgments">
 <section id="appendix-A">
       <h2 id="name-acknowledgments">
