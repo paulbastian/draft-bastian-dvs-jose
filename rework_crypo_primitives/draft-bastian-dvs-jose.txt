@@ -5,7 +5,7 @@
 Javascript Object Signing and Encryption                      P. Bastian
 Internet-Draft                                                  M. Kraus
 Intended status: Informational                      Bundesdruckerei GmbH
-Expires: 16 December 2024                                   14 June 2024
+Expires: 19 December 2024                                   17 June 2024
 
 
                 Designated Verifier Signatures for JOSE
@@ -50,7 +50,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 16 December 2024.
+   This Internet-Draft will expire on 19 December 2024.
 
 Copyright Notice
 
@@ -135,13 +135,19 @@ Table of Contents
 
    TODO
 
-   DVS rely on the following primitives: - A Diffie-Hellman Key
-   Agreement (DHKA) - DH(skX, pkY): Perform a non-interactive Diffie-
-   Hellman exchange using the private key skX and public key pkY to
-   produce a Diffie-Hellman shared secret of length Ndh. This function
-   can raise a ValidationError.  - Ndh: The length in bytes of a Diffie-
-   Hellman shared secret produced by DH().  - Nsk: The length in bytes
-   of a Diffie-Hellman private key.
+   DVS rely on the following primitives:
+
+   *  A Diffie-Hellman Key Agreement (DHKA)
+
+      -  DH(skX, pkY): Perform a non-interactive Diffie-Hellman exchange
+         using the private key skX and public key pkY to produce a
+         Diffie-Hellman shared secret of length Ndh. This function can
+         raise a ValidationError.
+
+      -  Ndh: The length in bytes of a Diffie-Hellman shared secret
+         produced by DH().
+
+      -  Nsk: The length in bytes of a Diffie-Hellman private key.
 
    *  A key derivation function (KDF):
 
