@@ -1335,14 +1335,16 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       </ol>
 <p id="section-5-3">In general, these parameters are chosen by the Signing Party. These parameters need to be communicated to the Verifying Party before the generation of a Designated Verifier Signature.<a href="#section-5-3" class="pilcrow">¶</a></p>
 <p id="section-5-4">The following functions are defined to describe a generic, composable Designated Verifier Signature Scheme:<a href="#section-5-4" class="pilcrow">¶</a></p>
-<p id="section-5-5">```
+<div class="alignLeft art-text artwork" id="section-5-5">
+<pre>
 def dvsSign(pkR, skS, msg, salt, info = "DVS-1")
    dh =  DH(skS, pkR)
    prk = Extract(salt, dh)
    k = Expand(prk, info, Nk)
    mac = MacSign(k, msg)
-   return mac<a href="#section-5-5" class="pilcrow">¶</a></p>
-<p id="section-5-6">def dvsVerify(skR, pkS, msg, salt, info = "DVS-1", mac)
+   return mac
+
+def dvsVerify(skR, pkS, msg, salt, info = "DVS-1", mac)
    dh =  DH(skR, pkS)
    prk = Extract(salt, dh)
    k = Expand(prk, info, Nk)
@@ -1350,7 +1352,8 @@ def dvsSign(pkR, skS, msg, salt, info = "DVS-1")
    if mac != mac':
       raise Exception("Designated Verifier Signature invalid")
    return
-```<a href="#section-5-6" class="pilcrow">¶</a></p>
+</pre><a href="#section-5-5" class="pilcrow">¶</a>
+</div>
 <div id="signature-generation">
 <section id="section-5.1">
         <h3 id="name-signature-generation">
