@@ -1337,14 +1337,14 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <p id="section-5-4">The following functions are defined to describe a generic, composable Designated Verifier Signature Scheme:<a href="#section-5-4" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5-5">
 <pre>
-def dvsSign(pkR, skS, msg, salt, info = "DVS-1")
+def dvsSign(pkR, skS, msg, salt= "", info = "DVS-1")
    dh =  DH(skS, pkR)
    prk = Extract(salt, dh)
    k = Expand(prk, info, Nk)
    mac = MacSign(k, msg)
    return mac
 
-def dvsVerify(skR, pkS, msg, salt, info = "DVS-1", mac)
+def dvsVerify(skR, pkS, msg, salt = "", info = "DVS-1", mac)
    dh =  DH(skR, pkS)
    prk = Extract(salt, dh)
    k = Expand(prk, info, Nk)
@@ -1538,18 +1538,16 @@ The "KEM", "KDF", and "AEAD" values are chosen from the HPKE IANA registry <span
 <p id="section-7-2">The following JWS headers are used to convey Designated Verifier Signatures for JOSE:<a href="#section-7-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7-3.1">
-          <p id="section-7-3.1.1"><code>alg</code> : The algorithm parameter describes the chosen signature suite, for example the ones described in (#generic_suites) and (#hpke_suites).<a href="#section-7-3.1.1" class="pilcrow">¶</a></p>
+          <p id="section-7-3.1.1"><code>alg</code> : <span class="bcp14">REQUIRED</span>. The algorithm parameter describes the chosen signature suite, for example the ones described in (#generic_suites) and (#hpke_suites).<a href="#section-7-3.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-3.2">
-          <p id="section-7-3.2.1"><code>jwk</code> : The <code>jwk</code> parameter represents the encoded public key of the Signing Party for the use in the DHKA algorithm as a JSON Web Key according to <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>. It <span class="bcp14">MUST</span> contain only public key parameters and <span class="bcp14">SHOULD</span> contain only the minimum JWK parameters necessary to represent the key. Usage of this parameter <span class="bcp14">MUST</span> be supported.<a href="#section-7-3.2.1" class="pilcrow">¶</a></p>
+          <p id="section-7-3.2.1"><code>rpk</code> : <span class="bcp14">REQUIRED</span>. The <code>rpk</code> (recipient public key) parameter represents the encoded public key of the Verifying Party that was used in the DHKA algorithm as a JSON Web Key according to <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>. This parameter <span class="bcp14">MUST</span> be present.<a href="#section-7-3.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-3.3">
-          <p id="section-7-3.3.1"><code>x5c</code> : The <code>x5c</code> parameter represents the encoded certificate chain and its leaf public key of the Signing Party for the use in the DHKA algorithm as a X.509 certificate chain according to <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>. Alternatively, the Signing Party may use "x5t", x5t#S256" or "x5u". Usage of this parameter <span class="bcp14">MAY</span> be supported.<a href="#section-7-3.3.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-7-3.4">
-          <p id="section-7-3.4.1"><code>rpk</code> : The <code>rpk</code> (recipient public key) parameter represents the encoded public key of the Verifying Party that was used in the DHKA algorithm as a JSON Web Key according to <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>. This parameter <span class="bcp14">MUST</span> be present.<a href="#section-7-3.4.1" class="pilcrow">¶</a></p>
+          <p id="section-7-3.3.1"><code>nonce</code> : <span class="bcp14">OPTIONAL</span>. The <code>nonce</code> may be provided by the Verifying Party additional to it's public key and ensure additional freshness of the signature. If provided, the Signing Party <span class="bcp14">SHOULD</span> add the <code>nonce</code> to the header.<a href="#section-7-3.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
+<p id="section-7-4">The Signing Party may use existing JWS header parameters like <code>x5c</code>, <code>jwk</code> or <code>kid</code> to represent or reference it's public key according to <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>.<a href="#section-7-4" class="pilcrow">¶</a></p>
 <div id="example-jwt">
 <section id="section-7.1">
         <h3 id="name-example-jwt">
@@ -1623,7 +1621,7 @@ base64-encoded MAC
         </h3>
 <ul class="normal">
 <li class="normal" id="section-8.1-1.1">
-            <p id="section-8.1-1.1.1">Verifying Party <span class="bcp14">MUST</span> ensure the freshness of signatures by utilizing ephemeral keys or add random to the salt of the KDF (protocol specific).<a href="#section-8.1-1.1.1" class="pilcrow">¶</a></p>
+            <p id="section-8.1-1.1.1">Verifying Party <span class="bcp14">MUST</span> ensure the freshness of signatures by utilizing ephemeral keys in <code>rpk</code> or by providing a nonce for <code>nonce</code>.<a href="#section-8.1-1.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
