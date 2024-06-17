@@ -193,14 +193,14 @@ Table of Contents
    The following functions are defined to describe a generic, composable
    Designated Verifier Signature Scheme:
 
-   def dvsSign(pkR, skS, msg, salt, info = "DVS-1")
+   def dvsSign(pkR, skS, msg, salt= "", info = "DVS-1")
       dh =  DH(skS, pkR)
       prk = Extract(salt, dh)
       k = Expand(prk, info, Nk)
       mac = MacSign(k, msg)
       return mac
 
-   def dvsVerify(skR, pkS, msg, salt, info = "DVS-1", mac)
+   def dvsVerify(skR, pkS, msg, salt = "", info = "DVS-1", mac)
       dh =  DH(skR, pkS)
       prk = Extract(salt, dh)
       k = Expand(prk, info, Nk)
@@ -348,27 +348,23 @@ Table of Contents
    The following JWS headers are used to convey Designated Verifier
    Signatures for JOSE:
 
-   *  alg : The algorithm parameter describes the chosen signature
-      suite, for example the ones described in (#generic_suites) and
-      (#hpke_suites).
+   *  alg : REQUIRED.  The algorithm parameter describes the chosen
+      signature suite, for example the ones described in
+      (#generic_suites) and (#hpke_suites).
 
-   *  jwk : The jwk parameter represents the encoded public key of the
-      Signing Party for the use in the DHKA algorithm as a JSON Web Key
-      according to [RFC7517].  It MUST contain only public key
-      parameters and SHOULD contain only the minimum JWK parameters
-      necessary to represent the key.  Usage of this parameter MUST be
-      supported.
+   *  rpk : REQUIRED.  The rpk (recipient public key) parameter
+      represents the encoded public key of the Verifying Party that was
+      used in the DHKA algorithm as a JSON Web Key according to
+      [RFC7517].  This parameter MUST be present.
 
-   *  x5c : The x5c parameter represents the encoded certificate chain
-      and its leaf public key of the Signing Party for the use in the
-      DHKA algorithm as a X.509 certificate chain according to
-      [RFC7517].  Alternatively, the Signing Party may use "x5t",
-      x5t#S256" or "x5u".  Usage of this parameter MAY be supported.
+   *  nonce : OPTIONAL.  The nonce may be provided by the Verifying
+      Party additional to it's public key and ensure additional
+      freshness of the signature.  If provided, the Signing Party SHOULD
+      add the nonce to the header.
 
-   *  rpk : The rpk (recipient public key) parameter represents the
-      encoded public key of the Verifying Party that was used in the
-      DHKA algorithm as a JSON Web Key according to [RFC7517].  This
-      parameter MUST be present.
+   The Signing Party may use existing JWS header parameters like x5c,
+   jwk or kid to represent or reference it's public key according to
+   [RFC7517].
 
 7.1.  Example JWT
 
@@ -421,8 +417,7 @@ Table of Contents
 8.1.  Replay Attack Detection
 
    *  Verifying Party MUST ensure the freshness of signatures by
-      utilizing ephemeral keys or add random to the salt of the KDF
-      (protocol specific).
+      utilizing ephemeral keys in rpk or by providing a nonce for nonce.
 
 9.  IANA Considerations
 
