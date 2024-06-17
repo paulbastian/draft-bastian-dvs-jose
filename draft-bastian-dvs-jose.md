@@ -291,7 +291,7 @@ This specification described instantiations of Designated Verifier Signatures us
 
 Define:
 
-- `rpk` header parameter
+- define new `rpk` header parameter
 - alg values for DVS-P256-SHA256-HS256 and some more
 
 --- back
