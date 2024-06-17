@@ -111,7 +111,7 @@ In general, these parameters are chosen by the Signing Party. These parameters n
 
 The following functions are defined to describe a generic, composable Designated Verifier Signature Scheme:
 
-```
+~~~
 def dvsSign(pkR, skS, msg, salt, info = "DVS-1")
    dh =  DH(skS, pkR)
    prk = Extract(salt, dh)
@@ -127,7 +127,7 @@ def dvsVerify(skR, pkS, msg, salt, info = "DVS-1", mac)
    if mac != mac':
       raise Exception("Designated Verifier Signature invalid")
    return
-```
+~~~
 
 ## Signature Generation
 
