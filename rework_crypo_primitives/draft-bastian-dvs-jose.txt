@@ -74,19 +74,21 @@ Table of Contents
    4.  Cryptographic Dependencies
    5.  Designated Verifier Signatures
      5.1.  Signature Generation
+     5.2.  Signature Verification
+     5.3.  Signature Suites
    6.  Designated Verifier Signatures using HPKE
      6.1.  Signature Generation
      6.2.  Signature Verification
      6.3.  Signature Suites
    7.  Designated Verifier Signatures for JOSE
      7.1.  Example JWT
-   8.  Signature Suites
-   9.  Security Considerations
-   10. IANA Considerations
-   11. References
-     11.1.  Normative References
-     11.2.  Informative References
-   Acknowledgments
+   8.  Security Considerations
+     8.1.  Replay Attack Detection
+   9.  IANA Considerations
+   10. References
+     10.1.  Normative References
+     10.2.  Informative References
+   Appendix A.  Acknowledgments
    Authors' Addresses
 
 1.  Introduction
@@ -101,9 +103,9 @@ Table of Contents
    use a combination of an ECDH key exchange with an HMAC.
 
    This specification and all described algorithms should respect the
-   efforts for (Fully Specified
-   Algorithms)[https://www.ietf.org/archive/id/draft-jones-jose-fully-
-   specified-algorithms-00.html].
+   efforts for Fully Specified Algorithms
+   (https://www.ietf.org/archive/id/draft-jones-jose-fully-specified-
+   algorithms-00.html).
 
    This algorithm is intended for use with digital credentials
    ecosystems, including the Issuer-Holder-Verifier model described by
@@ -130,10 +132,6 @@ Table of Contents
       Verifier.
 
 4.  Cryptographic Dependencies
-
-   DVS uses the following notation:
-
-   TODO
 
    DVS rely on the following primitives:
 
@@ -162,16 +160,18 @@ Table of Contents
 
    *  A Message Authentication Code algorithm (MAC)
 
-      -  Sign(k, i): Returns a authenticated tag for the given input i
-         and shared key k.
+      -  MacSign(k, i): Returns an authenticated tag for the given input
+         i and key k.
 
-   *  A HPKE algorithm (for the HPKE variants):
+      -  Nk: The length in bytes of key k.
+
+   *  An HPKE algorithm (for the HPKE variants):
 
       -  SealAuth(pkR, info, aad, pt, skS): encrypts and authenticates
          single plaintext pt with associated data aad and context info
          using a private sender key skS and public receiver key pkR.
 
-      -  OpenAuth(enc, skR, info, aad, ct, pkS): decrypts cybertext and
+      -  OpenAuth(enc, skR, info, aad, ct, pkS): decrypts ciphertext and
          tag ct with associated data aad and context info using a
          private receiver key skR and public sender key pkS.
 
@@ -190,6 +190,18 @@ Table of Contents
    parameters need to be communicated to the Verifying Party before the
    generation of a Designated Verifier Signature.
 
+   The following functions are defined to describe a generic, composable
+   Designated Verifier Signature Scheme:
+
+   ``` def dvsSign(pkR, skS, msg, salt, info = "DVS-1") dh = DH(skS,
+   pkR) prk = Extract(salt, dh) k = Expand(prk, info, Nk) mac =
+   MacSign(k, msg) return mac
+
+   def dvsVerify(skR, pkS, msg, salt, info = "DVS-1", mac) dh = DH(skR,
+   pkS) prk = Extract(salt, dh) k = Expand(prk, info, Nk) mac' =
+   MacSign(k, msg) if mac != mac': raise Exception("Designated Verifier
+   Signature invalid") return ```
+
 5.1.  Signature Generation
 
    The generation of the Designated Verifier Signature takes the private
@@ -198,41 +210,47 @@ Table of Contents
    Verifying Party's public key is out of scope of this specification
    and subject to the implementing protocols.
 
-   The generation of the signature follows these steps:
+   Input:
 
-   1.  Perform the key agreement as defined by the DHKA algorithm - use
-       the specified elliptic curve to generate a key pair and set the
-       epk - use the Verifier's public key defined by kid to perform the
-       key agreement - optionally provide a certificate chain defined by
-       x5c
+   *  skS: private key of the Signing Party
 
-   2.  Extract and expand the shared secret as defined by KDF algorithm
-       - use the output from the key agreement as an input for the key
-       derivation algorithm - derive the MAC key
+   *  pkR: public key of the Verifying Party
 
-   3.  Generate a MAC as defined by MAC algorithm - use the output from
-       the key derivation algorithm as an input for the MAC algorithm -
-       use the JWS Signing Input as defined in Section 5.1 if [RFC7515]
-       as the message input for the MAC algorithm - generate the MAC
+   *  msg: JWS Signing Input
 
-   The verification of signature follows these steps:
+   *  salt : Salt for key derivation
 
-   1.  Perform key agreement as defined by the DHKA algorithm - use the
-       specified elliptic curve to generate an ephemeral key pair and
-       set the kid - provide the public key kid to the Signing Party -
-       use the Signing Party's public key defined by epk and perform the
-       key agreement - optionally validate the certificate chain defined
-       by x5c
+   *  info : optional info for key derivation
 
-   2.  Extract and expand the shared secret as defined by KDF algorithm
-       - use the output from the key agreement as an input for the key
-       derivation algorithm - derive the MAC key
+   Steps: * TODO
 
-   3.  Generate a MAC as defined by MAC algorithm - use the output from
-       the key derivation algorithm as an input for the MAC algorithm -
-       generate the MAC
+5.2.  Signature Verification
 
-   4.  Compare the generated MAC with the signature value
+   The generation of the Designated Verifier Signature takes the private
+   key of the Signing Party, the public key of the Verifying Party and
+   the message as inputs.  The retrieval and communication of the
+   Verifying Party's public key is out of scope of this specification
+   and subject to the implementing protocols.
+
+   Input:
+
+   *  skR: private key of the Verifying Party
+
+   *  pkS: public key of the Signing Party
+
+   *  msg: JWS Signing Input
+
+   *  salt : Salt for key derivation
+
+   *  info : optional info for key derivation
+
+   *  signature : the Message Authentication Code
+
+   Steps: * TODO
+
+5.3.  Signature Suites
+
+   Algorithms MUST follow the naming DVS-<DHKA>-<KDF>-<MAC>.
 
 6.  Designated Verifier Signatures using HPKE
 
@@ -259,11 +277,11 @@ Table of Contents
 
    *  msg: JWS Signing Input
 
+   *  info : optional info for key derivation
+
    Steps:
 
    1.  Call enc, ct = SealAuth(pkR, info, aad, pt, skS) with
-
-       *  info = ""
 
        *  aad = msg
 
@@ -286,6 +304,8 @@ Table of Contents
 
    *  msg: JWS Signing Input
 
+   *  info : optional info for key derivation
+
    *  signature: JWS Signature octet string
 
    Steps:
@@ -294,8 +314,6 @@ Table of Contents
        [HPKE-IANA] for length of ct and enc.
 
    2.  Call pt = OpenAuth(enc, skR, info, aad, ct, pkS) with
-
-       *  info = ""
 
        *  aad = msg
 
@@ -324,7 +342,8 @@ Table of Contents
    Signatures for JOSE:
 
    *  alg : The algorithm parameter describes the chosen signature
-      suite, for example the ones described in (#suites)
+      suite, for example the ones described in (#generic_suites) and
+      (#hpke_suites).
 
    *  jwk : The jwk parameter represents the encoded public key of the
       Signing Party for the use in the DHKA algorithm as a JSON Web Key
@@ -368,10 +387,6 @@ Table of Contents
 
    base64-encoded MAC
 
-8.  Signature Suites
-
-   Algorithms MUST follow the naming DVS-<DHKA>-<KDF>-<MAC>.
-
    This specification described instantiations of Designated Verifier
    Signatures using specific algorithm combinations:
 
@@ -394,11 +409,15 @@ Table of Contents
 |                       | AES-128-GCM AEAD            |                |
 +-----------------------+-----------------------------+----------------+
 
-9.  Security Considerations
+8.  Security Considerations
 
-   TODO Security
+8.1.  Replay Attack Detection
 
-10.  IANA Considerations
+   *  Verifying Party MUST ensure the freshness of signatures by
+      utilizing ephemeral keys or add random to the salt of the KDF
+      (protocol specific).
+
+9.  IANA Considerations
 
    Define:
 
@@ -406,9 +425,9 @@ Table of Contents
 
    *  alg values for DVS-P256-SHA256-HS256 and some more
 
-11.  References
+10.  References
 
-11.1.  Normative References
+10.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -435,16 +454,20 @@ Table of Contents
               Public Key Encryption", RFC 9180, DOI 10.17487/RFC9180,
               February 2022, <https://www.rfc-editor.org/rfc/rfc9180>.
 
-11.2.  Informative References
+10.2.  Informative References
 
    [HPKE-IANA]
               "Hybrid Public Key Encryption (HPKE) IANA Registry",
               October 2023,
               <https://www.iana.org/assignments/hpke/hpke.xhtml>.
 
-Acknowledgments
+Appendix A.  Acknowledgments
 
-   TODO acknowledge.
+   Thanks to:
+
+   *  Brian Campbell
+
+   *  John Bradley
 
 Authors' Addresses
 
