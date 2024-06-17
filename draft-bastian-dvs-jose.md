@@ -278,7 +278,6 @@ This specification described instantiations of Designated Verifier Signatures us
 |                       | HKDF-SHA256 KDF and         |                |
 |                       | AES-128-GCM AEAD            |                |
 +-----------------------+-----------------------------+----------------+
-
 ~~~
 
 # Security Considerations
