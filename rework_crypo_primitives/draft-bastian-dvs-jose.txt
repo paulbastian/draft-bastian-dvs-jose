@@ -193,14 +193,21 @@ Table of Contents
    The following functions are defined to describe a generic, composable
    Designated Verifier Signature Scheme:
 
-   ``` def dvsSign(pkR, skS, msg, salt, info = "DVS-1") dh = DH(skS,
-   pkR) prk = Extract(salt, dh) k = Expand(prk, info, Nk) mac =
-   MacSign(k, msg) return mac
+   def dvsSign(pkR, skS, msg, salt, info = "DVS-1")
+      dh =  DH(skS, pkR)
+      prk = Extract(salt, dh)
+      k = Expand(prk, info, Nk)
+      mac = MacSign(k, msg)
+      return mac
 
-   def dvsVerify(skR, pkS, msg, salt, info = "DVS-1", mac) dh = DH(skR,
-   pkS) prk = Extract(salt, dh) k = Expand(prk, info, Nk) mac' =
-   MacSign(k, msg) if mac != mac': raise Exception("Designated Verifier
-   Signature invalid") return ```
+   def dvsVerify(skR, pkS, msg, salt, info = "DVS-1", mac)
+      dh =  DH(skR, pkS)
+      prk = Extract(salt, dh)
+      k = Expand(prk, info, Nk)
+      mac' = MacSign(k, msg)
+      if mac != mac':
+         raise Exception("Designated Verifier Signature invalid")
+      return
 
 5.1.  Signature Generation
 
