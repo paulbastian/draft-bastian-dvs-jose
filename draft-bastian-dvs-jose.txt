@@ -423,7 +423,7 @@ Table of Contents
 
    Define:
 
-   *  rpk header parameter
+   *  define new rpk header parameter
 
    *  alg values for DVS-P256-SHA256-HS256 and some more
 
