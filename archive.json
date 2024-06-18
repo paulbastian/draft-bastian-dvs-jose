@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-16T01:09:27.357557+00:00",
+  "timestamp": "2024-06-18T01:04:53.823041+00:00",
   "repo": "paulbastian/draft-bastian-dvs-jose",
   "labels": [
     {
@@ -55,14 +55,38 @@
       "id": "I_kwDOLDmL8c58uqsC",
       "title": "Align with standard JWS headers ",
       "url": "https://github.com/paulbastian/draft-bastian-dvs-jose/issues/1",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bc-pi",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "From a conversation over at https://github.com/oauth-wg/oauth-selective-disclosure-jwt/issues/369#issuecomment-1902056559\r\n\r\n> > > https://paulbastian.github.io/jose-ecdh-mac-algorithms/draft-bastian-jose-alg-ecdh-mac.html\r\n\r\n> >  interesting work @paulbastian! I might humbly suggest that you revisit how the header parameters are used to better align with how they are already defined in JWS. Specifically, I think the standard JWS headers https://www.rfc-editor.org/rfc/rfc7515#section-4.1 like kid/jwk/x5c/x5t/etc should be for indicating the key of the Generating Party, which is really like the signer in this case. And a new header be defined to convey the Verifying Party's key. What's in draft-bastian-jose-alg-ecdh-mac-01 currently feels kinda backwards from what JWS has. And the Generating Party's key is probably not going to be ephemeral in most cases so epk doesn't seem quite right.\r\n\r\n> Thanks for the feedback @bc-pi\r\n> The header names were the part that I was least sure about, I oriented on the ECDH-ES part of JWA. But I don't mind changing them, feel free to open an issue on the repo!",
       "createdAt": "2024-01-21T14:25:22Z",
-      "updatedAt": "2024-01-21T14:25:22Z",
+      "updatedAt": "2024-06-17T15:47:22Z",
+      "closedAt": "2024-06-17T15:47:22Z",
+      "comments": [
+        {
+          "author": "paulbastian",
+          "authorAssociation": "OWNER",
+          "body": "Solved in newest version",
+          "createdAt": "2024-06-17T15:47:12Z",
+          "updatedAt": "2024-06-17T15:47:12Z"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "I_kwDOLDmL8c6Mhzyy",
+      "title": "Give Signing Party the option to set a salt for the KDF?",
+      "url": "https://github.com/paulbastian/draft-bastian-dvs-jose/issues/5",
+      "state": "OPEN",
+      "author": "paulbastian",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-06-17T15:46:55Z",
+      "updatedAt": "2024-06-17T15:46:55Z",
       "closedAt": null,
       "comments": []
     }
@@ -109,6 +133,62 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 3,
+      "id": "PR_kwDOLDmL8c5ytGU6",
+      "title": "Rework crypo primitives",
+      "url": "https://github.com/paulbastian/draft-bastian-dvs-jose/pull/3",
+      "state": "MERGED",
+      "author": "paulbastian",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-06-17T14:49:55Z",
+      "updatedAt": "2024-06-17T14:50:35Z",
+      "baseRepository": "paulbastian/draft-bastian-dvs-jose",
+      "baseRefName": "main",
+      "baseRefOid": "1916d89c235becc60333c270564c409a4062736b",
+      "headRepository": "paulbastian/draft-bastian-dvs-jose",
+      "headRefName": "rework_crypo_primitives",
+      "headRefOid": "f8ed1829fb7bf6f85bd8a4c56001fd4d4abfd8a8",
+      "closedAt": "2024-06-17T14:50:32Z",
+      "mergedAt": "2024-06-17T14:50:32Z",
+      "mergedBy": "paulbastian",
+      "mergeCommit": {
+        "oid": "5827a093ef73349d3581860476e02588c1697c6a"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 4,
+      "id": "PR_kwDOLDmL8c5ytKXG",
+      "title": "fix markup",
+      "url": "https://github.com/paulbastian/draft-bastian-dvs-jose/pull/4",
+      "state": "MERGED",
+      "author": "paulbastian",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-06-17T14:58:22Z",
+      "updatedAt": "2024-06-17T14:58:33Z",
+      "baseRepository": "paulbastian/draft-bastian-dvs-jose",
+      "baseRefName": "main",
+      "baseRefOid": "5827a093ef73349d3581860476e02588c1697c6a",
+      "headRepository": "paulbastian/draft-bastian-dvs-jose",
+      "headRefName": "rework_crypo_primitives",
+      "headRefOid": "070c22d87e56166ffc3809c9f17a0208dc92f6b3",
+      "closedAt": "2024-06-17T14:58:29Z",
+      "mergedAt": "2024-06-17T14:58:29Z",
+      "mergedBy": "paulbastian",
+      "mergeCommit": {
+        "oid": "2ed188c9cd917f3e040739fee6e3d775f95e8322"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
