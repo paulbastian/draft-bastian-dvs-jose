@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-18T01:04:53.823041+00:00",
+  "timestamp": "2024-06-20T01:03:15.826513+00:00",
   "repo": "paulbastian/draft-bastian-dvs-jose",
   "labels": [
     {
@@ -87,6 +87,22 @@
       "body": "",
       "createdAt": "2024-06-17T15:46:55Z",
       "updatedAt": "2024-06-17T15:46:55Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 6,
+      "id": "I_kwDOLDmL8c6MnOHJ",
+      "title": "What are consequences of Signing Party using static keys?",
+      "url": "https://github.com/paulbastian/draft-bastian-dvs-jose/issues/6",
+      "state": "OPEN",
+      "author": "paulbastian",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-06-18T06:59:27Z",
+      "updatedAt": "2024-06-18T06:59:27Z",
       "closedAt": null,
       "comments": []
     }
