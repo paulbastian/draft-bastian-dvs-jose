@@ -5,7 +5,7 @@
 Javascript Object Signing and Encryption                      P. Bastian
 Internet-Draft                                                  M. Kraus
 Intended status: Informational                      Bundesdruckerei GmbH
-Expires: 27 January 2025                                    26 July 2024
+Expires: 10 February 2025                                  9 August 2024
 
 
                 Designated Verifier Signatures for JOSE
@@ -50,7 +50,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 27 January 2025.
+   This Internet-Draft will expire on 10 February 2025.
 
 Copyright Notice
 
@@ -480,3 +480,4 @@ Authors' Addresses
 
    Micha Kraus
    Bundesdruckerei GmbH
+   Email: kraus.micha@gmail.com
