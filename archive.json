@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-09-22T01:20:16.753335+00:00",
+  "timestamp": "2024-09-24T01:15:54.855336+00:00",
   "repo": "paulbastian/draft-bastian-dvs-jose",
   "labels": [
     {
@@ -103,6 +103,22 @@
       "body": "",
       "createdAt": "2024-06-18T06:59:27Z",
       "updatedAt": "2024-06-18T06:59:27Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 7,
+      "id": "I_kwDOLDmL8c6Xgr9i",
+      "title": "Define what 'use' value is used for keys in JWKS",
+      "url": "https://github.com/paulbastian/draft-bastian-dvs-jose/issues/7",
+      "state": "OPEN",
+      "author": "jogu",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "I think the spec could state/show examples of a suitable JWK within a JWKS and how 'use' or other key parameters could be used to select a key.",
+      "createdAt": "2024-09-23T08:28:35Z",
+      "updatedAt": "2024-09-23T08:28:35Z",
       "closedAt": null,
       "comments": []
     }
