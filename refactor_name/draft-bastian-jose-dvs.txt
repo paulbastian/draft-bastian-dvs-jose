@@ -102,6 +102,10 @@ Table of Contents
    verifier signature schemes and specified a set of instantiations that
    use a combination of an ECDH key exchange with an HMAC.
 
+   The combination of ECDH and MAC is a established mechanism and used,
+   for example, in the mobile driving licence (mDL) application,
+   specified in [ISO-18013-5].
+
    This specification and all described algorithms should respect the
    efforts for Fully Specified Algorithms
    (https://www.ietf.org/archive/id/draft-jones-jose-fully-specified-
@@ -462,6 +466,12 @@ Table of Contents
               "Hybrid Public Key Encryption (HPKE) IANA Registry",
               October 2023,
               <https://www.iana.org/assignments/hpke/hpke.xhtml>.
+
+   [ISO-18013-5]
+              "ISO/IEC 18013-5:2021, Personal identification — ISO-
+              compliant driving licence, Part 5: Mobile driving licence
+              (mDL) application", September 2021,
+              <https://www.iso.org/standard/69084.html>.
 
 Appendix A.  Acknowledgments
 
