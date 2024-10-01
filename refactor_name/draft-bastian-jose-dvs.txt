@@ -5,11 +5,11 @@
 Javascript Object Signing and Encryption                      P. Bastian
 Internet-Draft                                                  M. Kraus
 Intended status: Informational                      Bundesdruckerei GmbH
-Expires: 16 January 2025                                    15 July 2024
+Expires: 4 April 2025                                     1 October 2024
 
 
                 Designated Verifier Signatures for JOSE
-                     draft-bastian-dvs-jose-latest
+                     draft-bastian-jose-dvs-latest
 
 Abstract
 
@@ -23,8 +23,8 @@ About This Document
 
    The latest revision of this draft can be found at
    https://paulbastian.github.io/draft-bastian-dvs-jose/draft-bastian-
-   dvs-jose.html.  Status information for this document may be found at
-   https://datatracker.ietf.org/doc/draft-bastian-dvs-jose/.
+   jose-dvs.html.  Status information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-bastian-jose-dvs/.
 
    Discussion of this document takes place on the Javascript Object
    Signing and Encryption Working Group mailing list
@@ -33,7 +33,7 @@ About This Document
    https://www.ietf.org/mailman/listinfo/jose/.
 
    Source for this draft and an issue tracker can be found at
-   https://github.com/paulbastian/draft-bastian-dvs-jose.
+   https://github.com/paulbastian/draft-bastian-jose-dvs.
 
 Status of This Memo
 
@@ -50,7 +50,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 16 January 2025.
+   This Internet-Draft will expire on 4 April 2025.
 
 Copyright Notice
 
@@ -480,3 +480,4 @@ Authors' Addresses
 
    Micha Kraus
    Bundesdruckerei GmbH
+   Email: kraus.micha@gmail.com
