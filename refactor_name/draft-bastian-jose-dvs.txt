@@ -33,7 +33,7 @@ About This Document
    https://www.ietf.org/mailman/listinfo/jose/.
 
    Source for this draft and an issue tracker can be found at
-   https://github.com/paulbastian/draft-bastian-jose-dvs.
+   https://github.com/paulbastian/draft-bastian-dvs-jose.
 
 Status of This Memo
 
