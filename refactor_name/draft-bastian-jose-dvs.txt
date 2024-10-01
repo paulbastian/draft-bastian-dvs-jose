@@ -3,8 +3,8 @@
 
 
 Javascript Object Signing and Encryption                      P. Bastian
-Internet-Draft                                                  M. Kraus
-Intended status: Informational                      Bundesdruckerei GmbH
+Internet-Draft                                                          
+Intended status: Informational                                  M. Kraus
 Expires: 4 April 2025                                     1 October 2024
 
 
@@ -489,10 +489,8 @@ Appendix B.  Acknowledgments
 Authors' Addresses
 
    Paul Bastian
-   Bundesdruckerei GmbH
    Email: bastianpaul@googlemail.com
 
 
    Micha Kraus
-   Bundesdruckerei GmbH
    Email: kraus.micha@gmail.com
