@@ -3,7 +3,7 @@ title: "Designated Verifier Signatures for JOSE"
 abbrev: "DVS for JOSE"
 category: info
 
-docname: draft-bastian-dvs-jose-latest
+docname: draft-bastian-jose-dvs-latest
 submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
@@ -21,18 +21,16 @@ venue:
   type: "Working Group"
   mail: "jose@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/jose/"
-  github: "paulbastian/draft-bastian-dvs-jose"
-  latest: "https://paulbastian.github.io/draft-bastian-dvs-jose/draft-bastian-dvs-jose.html"
+  github: "paulbastian/draft-bastian-jose-dvs"
+  latest: "https://paulbastian.github.io/draft-bastian-jose-dvs/draft-bastian-jose-dvs.html"
 
 author:
  -
     fullname: Paul Bastian
-    organization: Bundesdruckerei GmbH
     email: bastianpaul@googlemail.com
 
  -
     fullname: Micha Kraus
-    organization: Bundesdruckerei GmbH
     email: kraus.micha@gmail.com
 
 normative:
@@ -40,17 +38,28 @@ normative:
   RFC7517: RFC7517
   RFC7518: RFC7518
   RFC9180: RFC9180
+  BSI-TR-03111:
+    title: "Technical Guideline BSI TR-03111: Elliptic Curve Cryptography, Version 2.10"
+    target: https://www.bsi.bund.de/dok/TR-03111-en
+    date: June 2018
+
 
 informative:
   HPKE-IANA:
     title: Hybrid Public Key Encryption (HPKE) IANA Registry
     target: https://www.iana.org/assignments/hpke/hpke.xhtml
     date: October 2023
+  ISO-18013-5:
+    title: "ISO/IEC 18013-5:2021, Personal identification — ISO-compliant driving licence, Part 5: Mobile driving licence (mDL) application"
+    target: https://www.iso.org/standard/69084.html
+    date: September 2021
+
+
 
 
 --- abstract
 
-This specification defines designated verifier signatures for JOSE and defines algorithms that use a combination of key agreement and MACs.
+This specification defines structures and algorithm descriptions for the use of designated verifier signatures, based on a combination of Key Agreement and Message Authentication Code, with JOSE.
 
 --- middle
 
@@ -58,7 +67,9 @@ This specification defines designated verifier signatures for JOSE and defines a
 
 Designated verifier signatures (DVS) are signature schemes in which signatures are generated, that can only be verified a particular party. Unlike conventional digital signature schemes like ECDSA, this enables repudiable signatures.
 
-This specification describes a general structure for designated verifier signature schemes and specified a set of instantiations that use a combination of an ECDH key exchange with an HMAC.
+This specification describes a general structure for designated verifier signature schemes and specified a set of instantiations that use a combination of an KA-DH (Diffie-Hellman key aggrement) with an MAC (Message Authentication Code algorithm).
+
+The combination of ECKA-DH and MAC is a established mechanism and used, for example, in the mobile driving licence (mDL) application, specified in {{ISO-18013-5}}.
 
 This specification and all described algorithms should respect the efforts for [Fully Specified Algorithms](https://www.ietf.org/archive/id/draft-jones-jose-fully-specified-algorithms-00.html).
 
@@ -82,23 +93,19 @@ Verifying Party:
 
 DVS rely on the following primitives:
 
-- A Diffie-Hellman Key Agreement (DHKA)
+- A Diffie-Hellman Key Agreement (KA-DH), for example ECKA-DH defined in {{BSI-TR-03111}}:
     - `DH(skX, pkY)`: Perform a non-interactive Diffie-Hellman exchange using the private key `skX` and public key `pkY` to produce a Diffie-Hellman shared secret of length Ndh. This function can raise a ValidationError.
     - `Ndh`: The length in bytes of a Diffie-Hellman shared secret produced by `DH()`.
     - `Nsk`: The length in bytes of a Diffie-Hellman private key.
 
-- A key derivation function (KDF):
+- A key derivation function (KDF), for example HKDF defined in TODO:
     - `Extract(salt, ikm)`: Extract a pseudorandom key of fixed length Nh bytes from input keying material `ikm` and an optional byte string `salt`.
     - `Expand(prk, info, L)`: Expand a pseudorandom key `prk` using optional string `info` into `L` bytes of output keying material.
     - `Nh`: The output size of the Extract() function in bytes.
 
-- A Message Authentication Code algorithm (MAC)
+- A Message Authentication Code algorithm (MAC), for example HMAC defined in TODO:
     - `MacSign(k, i)`: Returns an authenticated tag for the given input `i` and key `k`.
     - `Nk`: The length in bytes of key `k`.
-
-- An HPKE algorithm (for the HPKE variants):
-    - `SealAuth(pkR, info, aad, pt, skS)`: encrypts and authenticates single plaintext `pt` with associated data `aad` and context `info` using a private sender key `skS` and public receiver key `pkR`.
-    - `OpenAuth(enc, skR, info, aad, ct, pkS)`: decrypts ciphertext and tag `ct` with associated data `aad` and context `info` using a private receiver key `skR` and public sender key `pkS`.
 
 # Designated Verifier Signatures
 
@@ -110,25 +117,6 @@ A designated verifier signature requires three components for an algorithm:
 
 In general, these parameters are chosen by the Signing Party. These parameters need to be communicated to the Verifying Party before the generation of a Designated Verifier Signature.
 
-The following functions are defined to describe a generic, composable Designated Verifier Signature Scheme:
-
-~~~
-def dvsSign(pkR, skS, msg, salt= "", info = "DVS-1")
-   dh =  DH(skS, pkR)
-   prk = Extract(salt, dh)
-   k = Expand(prk, info, Nk)
-   mac = MacSign(k, msg)
-   return mac
-
-def dvsVerify(skR, pkS, msg, salt = "", info = "DVS-1", mac)
-   dh =  DH(skR, pkS)
-   prk = Extract(salt, dh)
-   k = Expand(prk, info, Nk)
-   mac' = MacSign(k, msg)
-   if mac != mac':
-      raise Exception("Designated Verifier Signature invalid")
-   return
-~~~
 
 ## Signature Generation
 
@@ -142,8 +130,17 @@ Input:
  * `salt` : Salt for key derivation
  * `info` : optional info for key derivation
 
-Steps:
- * TODO
+Function:
+
+~~~
+def dvsSign(skS, pkR, msg, salt= "", info = "DVS-1")
+
+    dh =  DH(skS, pkR)
+    prk = Extract(salt, dh)
+    k = Expand(prk, info, Nk)
+    signature = MacSign(k, msg)
+    return signature
+~~~
 
 ## Signature Verification
 
@@ -158,63 +155,22 @@ Input:
  * `info` : optional info for key derivation
  * `signature` : the Message Authentication Code
 
-Steps:
- * TODO
+Function:
+
+~~~
+def dvsVerify(skR, pkS, msg, salt = "", info = "DVS-1", signature)
+
+    dh =  DH(skR, pkS)
+    prk = Extract(salt, dh)
+    k = Expand(prk, info, Nk)
+    signature' = MacSign(k, msg)
+    if signature != signature':
+    raise Exception("Designated Verifier Signature invalid")
+    return
+~~~
 
 ## Signature Suites {#generic_suites}
 Algorithms MUST follow the naming `DVS-<DHKA>-<KDF>-<MAC>`.
-
-# Designated Verifier Signatures using HPKE
-
-This section describes a simple designated verifier signature scheme based on Hybrid Public Key Encryption (HPKE) {{RFC9180}} in auth mode.
-It reuses the authentication scheme underlying the AEAD algorithm in use, while using the KEM to establish a one-time authentication key from a pair of KEM public keys.
-This scheme was described in early specification drafts of HPKE {{RFC9180}}
-
-## Signature Generation
-
-To create a signature, the sender simply calls the single-shot `Seal()` method with an empty plaintext value and the message to be signed as AAD.
-This produces an encoded key enc and a ciphertext value that contains only the AAD tag. The signature value is the concatenation of the encoded key and the AAD tag.
-
-Input:
-
- * `skS`: private key of the Signing Party
- * `pkR`: public key of the Verifying Party
- * `msg`: JWS Signing Input
- * `info` : optional info for key derivation
-
-Steps:
-
-1. Call `enc`, `ct` = `SealAuth(pkR, info, aad, pt, skS)` with
-   * `aad` = `msg`
-   * `pt` = ""
-2. JWS Signature is the octet string concatenation of (`enc` \|\| `ct`)
-
-## Signature Verification
-
-To verify a signature, the recipient extracts encoded key and the AAD tag from the signature value and calls the single-shor `Open()` with the provided ciphertext.
-If the AEAD authentication passes, then the signature is valid.
-
-Input:
-
- * `skR`: private key of the Verifying Party
- * `pkS`: public key of the Signing Party
- * `msg`: JWS Signing Input
- * `info` : optional info for key derivation
- * `signature`: JWS Signature octet string
-
-Steps:
-
-1. Decode `enc` \|\| `ct` = `signature` by length of `enc` and `ct`. See {{HPKE-IANA}} for length of ct and enc.
-2. Call `pt` = `OpenAuth(enc, skR, info, aad, ct, pkS)` with
-   * `aad` = msg
-3. the signature is valid, when `OpenAuth()` returns `pt` = "" with no authentication exception
-
-NOTE: `ct` contains only a tag. It's length depends on the AEAD algorithm (see Nt values in RFC9180 chapter 7.3.)
-
-## Signature Suites {#hpke_suites}
-Algorithms MUST follow the naming `DVS-HPKE-<Mode>-<KEM>-<KDF>-<AEAD>`.
-"Mode" is Auth (PSKAuth could also be used).
-The "KEM", "KDF", and "AEAD" values are chosen from the HPKE IANA registry {{HPKE-IANA}}.
 
 # Designated Verifier Signatures for JOSE
 
@@ -265,18 +221,18 @@ This specification described instantiations of Designated Verifier Signatures us
 | Algorithm Name        | Algorithm Description       |                |
 |                       |                             | Requirements   |
 +-----------------------+-----------------------------+----------------+
-| DVS-P256-SHA256-HS256 | ECDH using NIST P-256,      | Optional       |
+| DVS-P256-SHA256-HS256 | ECDH using NIST P-256,      |   Optional     |
 |                       | HKDF using SHA-256 and      |                |
 |                       | HMAC using SHA-256          |                |
 +-----------------------+-----------------------------+----------------+
 | DVS-HPKE-Auth-X25519  | DVS based on HPKE using     |                |
-| -SHA256               | DHKEM(X25519, HKDF-SHA256)  |   Optional     |
-| -ChaCha20Poly1305     | HKDF-SHA256 KDF and         |                |
+| -SHA256               | DHKEM(X25519, HKDF-SHA256)  |  Optional      |
+| -ChaCha20Poly1305     | HKDF-SHA256 KDF and         |  (Appendix A)  |
 |                       | ChaCha20Poly1305 AEAD       |                |
 +-----------------------+-----------------------------+----------------+
 | DVS-HPKE-Auth-P256    | DVS based on HPKE using     |                |
 | -SHA256-AES128GCM     | DHKEM(P-256, HKDF-SHA256)   |   Optional     |
-|                       | HKDF-SHA256 KDF and         |                |
+|                       | HKDF-SHA256 KDF and         |   (Appendix A) |
 |                       | AES-128-GCM AEAD            |                |
 +-----------------------+-----------------------------+----------------+
 ~~~
@@ -295,6 +251,65 @@ Define:
 - alg values for DVS-P256-SHA256-HS256 and some more
 
 --- back
+
+# Designated Verifier Signatures using HPKE
+
+This section describes a simple designated verifier signature scheme based on Hybrid Public Key Encryption (HPKE) {{RFC9180}} in auth mode.
+It reuses the authentication scheme underlying the AEAD algorithm in use, while using the KEM to establish a one-time authentication key from a pair of KEM public keys.
+This scheme was described in early specification drafts of HPKE {{RFC9180}}
+
+## Cryptographic Dependencies
+
+- An HPKE algorithm (for the HPKE variants):
+- `SealAuth(pkR, info, aad, pt, skS)`: encrypts and authenticates single plaintext `pt` with associated data `aad` and context `info` using a private sender key `skS` and public receiver key `pkR`.
+- `OpenAuth(enc, skR, info, aad, ct, pkS)`: decrypts ciphertext and tag `ct` with associated data `aad` and context `info` using a private receiver key `skR` and public sender key `pkS`.
+
+## Signature Generation
+
+To create a signature, the sender simply calls the single-shot `Seal()` method with an empty plaintext value and the message to be signed as AAD.
+This produces an encoded key enc and a ciphertext value that contains only the AAD tag. The signature value is the concatenation of the encoded key and the AAD tag.
+
+Input:
+
+* `skS`: private key of the Signing Party
+* `pkR`: public key of the Verifying Party
+* `msg`: JWS Signing Input
+* `info` : optional info for key derivation
+
+Steps:
+
+1. Call `enc`, `ct` = `SealAuth(pkR, info, aad, pt, skS)` with
+* `aad` = `msg`
+* `pt` = ""
+2. JWS Signature is the octet string concatenation of (`enc` \|\| `ct`)
+
+## Signature Verification
+
+To verify a signature, the recipient extracts encoded key and the AAD tag from the signature value and calls the single-shor `Open()` with the provided ciphertext.
+If the AEAD authentication passes, then the signature is valid.
+
+Input:
+
+* `skR`: private key of the Verifying Party
+* `pkS`: public key of the Signing Party
+* `msg`: JWS Signing Input
+* `info` : optional info for key derivation
+* `signature`: JWS Signature octet string
+
+Steps:
+
+1. Decode `enc` \|\| `ct` = `signature` by length of `enc` and `ct`. See {{HPKE-IANA}} for length of ct and enc.
+2. Call `pt` = `OpenAuth(enc, skR, info, aad, ct, pkS)` with
+* `aad` = msg
+3. the signature is valid, when `OpenAuth()` returns `pt` = "" with no authentication exception
+
+NOTE: `ct` contains only a tag. It's length depends on the AEAD algorithm (see Nt values in RFC9180 chapter 7.3.)
+
+## Signature Suites {#hpke_suites}
+Algorithms MUST follow the naming `DVS-HPKE-<Mode>-<KEM>-<KDF>-<AEAD>`.
+"Mode" is Auth (PSKAuth could also be used).
+The "KEM", "KDF", and "AEAD" values are chosen from the HPKE IANA registry {{HPKE-IANA}}.
+
 
 # Acknowledgments
 

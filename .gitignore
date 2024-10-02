@@ -17,7 +17,7 @@
 /versioned/
 Gemfile.lock
 archive.json
-draft-bastian-dvs-jose.xml
+draft-bastian-jose-dvs.xml
 package-lock.json
 report.xml
 !requirements.txt
